@@ -380,7 +380,7 @@ async function loadSponsors() {
   }
 
   grid.innerHTML = sponsors.map(s => `
-    <div class="s-card" onclick="openPopup('${s.id}')">
+    <div class="s-card" onclick="window.open('${s.link_url || '#'}','_blank')">
       <div class="s-logo">
         ${s.logo_url ? `<img src="${s.logo_url}" alt="${s.name}">` : s.name}
       </div>
