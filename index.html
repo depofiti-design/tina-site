@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIP Bonus</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #080808;
+  --card-bg: #0f0e0c;
+  --card-border: #2a2418;
+  --gold1: #d4a843;
+  --gold2: #f0c96a;
+  --gold3: #8a6820;
+  --gold-glow: rgba(212,168,67,0.28);
+  --text: #f5ead8;
+  --subtext: #8a7a60;
+}
+
+body {
+  background: var(--bg);
+  font-family: 'Inter', sans-serif;
+  color: var(--text);
+  min-height: 100vh;
+}
+
+.page-wrap {
+  max-width: 480px;
+  margin: 0 auto;
+  padding-bottom: 30px;
+}
+
+/* ── HEADER ── */
+header {
+  background: linear-gradient(180deg,#141008 0%,#0a0a08 100%);
+  padding: 22px 16px 16px;
+  text-align: center;
+  border-bottom: 1px solid #2a2010;
+}
+
+.hdr-crown { font-size: 11px; letter-spacing: 4px; color: var(--gold3); margin-bottom: 8px; }
+
+.hdr-avatar {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  border: 2px solid var(--gold1);
+  background: linear-gradient(135deg,#2a1f08,#1a1408);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+  margin: 0 auto 10px;
+  box-shadow: 0 0 24px var(--gold-glow);
+  overflow: hidden;
+}
+
+.hdr-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+.hdr-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px; font-weight: 900;
+  background: linear-gradient(135deg,var(--gold2),var(--gold1),var(--gold3));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  letter-spacing: 6px; text-transform: uppercase;
+}
+
+.hdr-divider {
+  display: flex; align-items: center; gap: 10px;
+  margin: 8px 20px 0;
+}
+.hdr-line { flex: 1; height: 1px; background: linear-gradient(90deg,transparent,var(--gold3),transparent); }
+.hdr-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold1); }
+.hdr-sub { font-size: 9px; color: var(--subtext); letter-spacing: 3px; text-transform: uppercase; margin-top: 8px; }
+
+/* ── BANNERS ── */
+.banners-wrap { padding: 12px 10px 0; display: flex; flex-direction: column; gap: 8px; }
+
+.banner-card {
+  border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--gold3);
+  box-shadow: 0 0 16px var(--gold-glow);
+  cursor: pointer; position: relative;
+}
+
+.banner-card img { width: 100%; display: block; }
+
+.banner-card-inner {
+  background: linear-gradient(135deg,#1a1208,#0f0d08);
+  padding: 16px 18px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+
+.banner-left .b-amount {
+  font-family: 'Playfair Display', serif;
+  font-size: 36px; font-weight: 900; color: var(--gold2); line-height: 1;
+}
+.banner-left .b-title { font-size: 11px; font-weight: 600; color: var(--text); margin-top: 3px; }
+.banner-left .b-sub { font-size: 10px; color: var(--subtext); margin-top: 2px; }
+
+.banner-badge {
+  background: linear-gradient(135deg,var(--gold1),var(--gold3));
+  border-radius: 8px; padding: 10px 14px;
+  font-size: 12px; font-weight: 700; color: #080808; white-space: nowrap;
+}
+
+/* ── SECTION LABEL ── */
+.sec-label {
+  padding: 18px 14px 10px;
+  display: flex; align-items: center; gap: 10px;
+}
+.sec-line { flex: 1; height: 1px; background: var(--card-border); }
+.sec-text { font-size: 9px; font-weight: 700; color: var(--gold3); letter-spacing: 3px; text-transform: uppercase; white-space: nowrap; }
+
+/* ── SPONSOR GRID ── */
+.sponsor-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 7px; padding: 0 10px;
+}
+
+.s-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 11px 7px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .2s, box-shadow .2s;
+}
+.s-card:hover { border-color: var(--gold3); box-shadow: 0 0 12px var(--gold-glow); }
+
+.s-logo {
+  width: 54px; height: 28px;
+  background: #1a1408; border: 1px solid #2a2010; border-radius: 5px;
+  margin: 0 auto 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px; font-weight: 700; color: var(--gold1);
+  overflow: hidden;
+}
+.s-logo img { width: 100%; height: 100%; object-fit: contain; padding: 3px; }
+
+.s-bonus { font-size: 10px; font-weight: 700; color: var(--gold2); line-height: 1.3; }
+.s-code { font-size: 8px; color: var(--subtext); margin-top: 3px; }
+.s-btn {
+  margin-top: 7px;
+  background: linear-gradient(135deg,var(--gold1),var(--gold3));
+  border-radius: 5px; padding: 5px 0;
+  font-size: 8px; font-weight: 700; color: #080808; letter-spacing: .5px;
+}
+
+/* ── COLLAB BUTTON ── */
+.collab-wrap { padding: 14px 10px 4px; }
+.collab-btn {
+  width: 100%;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer;
+  position: relative; overflow: hidden;
+  text-decoration: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.collab-btn::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg,var(--gold2),var(--gold3));
+  border-radius: 3px 0 0 3px;
+}
+.collab-btn:hover { border-color: var(--gold3); box-shadow: 0 0 12px var(--gold-glow); }
+.collab-icon { font-size: 22px; }
+.collab-text .ct-title { font-size: 12px; font-weight: 700; color: var(--gold1); letter-spacing: 1px; }
+.collab-text .ct-sub { font-size: 10px; color: var(--subtext); margin-top: 1px; }
+.collab-arrow { margin-left: auto; color: var(--gold3); font-size: 18px; }
+
+/* ── FOOTER ── */
+.footer { text-align: center; padding: 18px 0 8px; font-size: 9px; color: #2a2010; letter-spacing: 2px; text-transform: uppercase; }
+
+/* ── POPUP ── */
+.popup-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.92); z-index: 200;
+  align-items: center; justify-content: center; padding: 20px;
+}
+.popup-overlay.active { display: flex; }
+
+.popup-box {
+  background: linear-gradient(160deg,#140f08,#0c0c0a);
+  border: 1px solid var(--gold3);
+  border-radius: 18px; padding: 26px 20px 22px;
+  max-width: 340px; width: 100%;
+  text-align: center;
+  box-shadow: 0 0 50px var(--gold-glow);
+  position: relative;
+  animation: popIn .22s ease;
+  max-height: 90vh; overflow-y: auto;
+}
+.popup-box::before {
+  content: ''; position: absolute; top: 0; left: 20%; right: 20%;
+  height: 1px; background: linear-gradient(90deg,transparent,var(--gold2),transparent);
+}
+@keyframes popIn { from { transform: scale(.88); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.popup-close {
+  position: absolute; top: 12px; right: 14px;
+  background: #1a1408; border: 1px solid var(--card-border);
+  color: var(--subtext); width: 28px; height: 28px;
+  border-radius: 50%; font-size: 14px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.popup-images { display: flex; gap: 8px; margin-bottom: 14px; }
+.popup-images.single img { width: 100%; border-radius: 10px; max-height: 200px; object-fit: cover; }
+.popup-images.double img { width: 50%; border-radius: 8px; max-height: 160px; object-fit: cover; }
+
+.popup-logo {
+  width: 88px; height: 44px;
+  background: #1a1408; border: 1px solid var(--gold3);
+  border-radius: 8px; margin: 0 auto 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: var(--gold1);
+  overflow: hidden;
+}
+.popup-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+
+.popup-amount {
+  font-family: 'Playfair Display', serif;
+  font-size: 42px; font-weight: 900;
+  background: linear-gradient(135deg,var(--gold2),var(--gold1));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  line-height: 1;
+}
+.popup-label { font-size: 13px; font-weight: 700; color: var(--text); margin-top: 4px; letter-spacing: 2px; text-transform: uppercase; }
+
+.popup-code-box {
+  margin: 12px auto;
+  background: #1a1408; border: 1px dashed var(--gold3);
+  border-radius: 8px; padding: 8px 16px;
+  display: inline-flex; align-items: center; gap: 10px;
+}
+.popup-code-label { font-size: 9px; color: var(--subtext); font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
+.popup-code-value { font-size: 15px; font-weight: 800; color: var(--gold2); letter-spacing: 1px; }
+
+.popup-cta {
+  display: block; width: 100%;
+  background: linear-gradient(135deg,var(--gold1),var(--gold3));
+  border: none; border-radius: 10px; padding: 13px;
+  font-size: 14px; font-weight: 700; color: #080808;
+  cursor: pointer; margin-top: 14px;
+  font-family: 'Inter', sans-serif; letter-spacing: 1px; text-transform: uppercase;
+  box-shadow: 0 4px 20px var(--gold-glow);
+  text-decoration: none;
+}
+.popup-note { font-size: 9px; color: var(--subtext); margin-top: 10px; letter-spacing: .5px; }
+
+/* ── LOADING ── */
+.loading-wrap { text-align: center; padding: 40px 20px; color: var(--subtext); font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <!-- HEADER -->
+  <header>
+    <div class="hdr-crown" id="hdr-crown">✦ ✦ ✦</div>
+    <div class="hdr-avatar" id="hdr-avatar">👑</div>
+    <div class="hdr-title" id="hdr-title">VIP</div>
+    <div class="hdr-divider"><div class="hdr-line"></div><div class="hdr-dot"></div><div class="hdr-line"></div></div>
+    <div class="hdr-sub" id="hdr-sub">EN İYİ BONUS FIRSATLARI</div>
+  </header>
+
+  <!-- BANNERS -->
+  <div class="banners-wrap" id="banners-wrap"></div>
+
+  <!-- SPONSORS -->
+  <div class="sec-label">
+    <div class="sec-line"></div>
+    <div class="sec-text">ÖZEL BONUSLAR</div>
+    <div class="sec-line"></div>
+  </div>
+  <div class="sponsor-grid" id="sponsor-grid">
+    <div class="loading-wrap" style="grid-column:1/-1">Yükleniyor...</div>
+  </div>
+
+  <!-- COLLAB BUTTON -->
+  <div class="collab-wrap">
+    <a class="collab-btn" id="collab-btn" href="#" target="_blank">
+      <div class="collab-icon">💎</div>
+      <div class="collab-text">
+        <div class="ct-title" id="collab-title">Reklam & İş Birliği</div>
+        <div class="ct-sub" id="collab-sub">Sponsorluk için iletişime geçin</div>
+      </div>
+      <div class="collab-arrow">›</div>
+    </a>
+  </div>
+
+  <div class="footer">© 2025 VIP BONUS</div>
+</div>
+
+<!-- POPUP -->
+<div class="popup-overlay" id="popup-overlay">
+  <div class="popup-box">
+    <button class="popup-close" onclick="closePopup()">✕</button>
+    <div class="popup-images" id="popup-images"></div>
+    <div class="popup-logo" id="popup-logo"></div>
+    <div class="popup-amount" id="popup-amount"></div>
+    <div class="popup-label" id="popup-label"></div>
+    <div class="popup-code-box" id="popup-code-box">
+      <span class="popup-code-label">KOD</span>
+      <span class="popup-code-value" id="popup-code"></span>
+    </div>
+    <a class="popup-cta" id="popup-cta" href="#" target="_blank">TIKLA & BONUS AL</a>
+    <div class="popup-note" id="popup-note"></div>
+  </div>
+</div>
+
+<script>
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let allPopups = {};
+let autoPopupShown = false;
+
+async function loadSettings() {
+  const { data } = await sb.from('settings').select('*');
+  if (!data) return;
+  const s = {};
+  data.forEach(r => s[r.key] = r.value);
+
+  if (s.site_icon) {
+    const av = document.getElementById('hdr-avatar');
+    av.innerHTML = s.site_icon.startsWith('http')
+      ? `<img src="${s.site_icon}" alt="logo">`
+      : s.site_icon;
+  }
+  if (s.site_title) document.getElementById('hdr-title').textContent = s.site_title;
+  if (s.site_subtitle) document.getElementById('hdr-sub').textContent = s.site_subtitle;
+  if (s.collab_text) document.getElementById('collab-title').textContent = s.collab_text;
+  if (s.collab_subtext) document.getElementById('collab-sub').textContent = s.collab_sub || s.collab_subtext;
+  if (s.collab_url) document.getElementById('collab-btn').href = s.collab_url;
+  if (s.primary_color) {
+    document.documentElement.style.setProperty('--gold1', s.primary_color);
+  }
+  if (s.page_title) document.title = s.page_title;
+}
+
+async function loadBanners() {
+  const { data } = await sb.from('banners').select('*').eq('is_active', true).order('sort_order');
+  if (!data || data.length === 0) return;
+  const wrap = document.getElementById('banners-wrap');
+  wrap.innerHTML = data.map(b => `
+    <div class="banner-card" onclick="window.open('${b.link_url || '#'}','_blank')">
+      ${b.image_url
+        ? `<img src="${b.image_url}" alt="${b.title || ''}">`
+        : `<div class="banner-card-inner">
+            <div class="banner-left">
+              <div class="b-amount">${b.title || ''}</div>
+              <div class="b-title">${b.subtitle || ''}</div>
+            </div>
+            ${b.badge_text ? `<div class="banner-badge">${b.badge_text}</div>` : ''}
+           </div>`
+      }
+    </div>
+  `).join('');
+}
+
+async function loadSponsors() {
+  const { data: sponsors } = await sb.from('sponsors').select('*').eq('is_active', true).order('sort_order');
+  const { data: popups } = await sb.from('popups').select('*');
+
+  if (popups) popups.forEach(p => { allPopups[p.sponsor_id] = p; });
+
+  const grid = document.getElementById('sponsor-grid');
+  if (!sponsors || sponsors.length === 0) {
+    grid.innerHTML = '<div class="loading-wrap" style="grid-column:1/-1">Henüz sponsor eklenmedi.</div>';
+    return;
+  }
+
+  grid.innerHTML = sponsors.map(s => `
+    <div class="s-card" onclick="openPopup('${s.id}')">
+      <div class="s-logo">
+        ${s.logo_url ? `<img src="${s.logo_url}" alt="${s.name}">` : s.name}
+      </div>
+      <div class="s-bonus">${s.bonus_text || ''}</div>
+      ${s.bonus_code ? `<div class="s-code">${s.bonus_code}</div>` : ''}
+      <div class="s-btn" style="background:linear-gradient(135deg,${s.button_color || '#d4a843'},#8a6820)">TIKLA AL</div>
+    </div>
+  `).join('');
+
+  // Auto popup - ilk sponsoru aç
+  if (!autoPopupShown && sponsors.length > 0) {
+    autoPopupShown = true;
+    setTimeout(() => openPopup(sponsors[0].id), 800);
+  }
+}
+
+function openPopup(sponsorId) {
+  const popup = allPopups[sponsorId];
+  if (!popup) return;
+
+  // images
+  const imgWrap = document.getElementById('popup-images');
+  if (popup.image1_url && popup.image2_url) {
+    imgWrap.className = 'popup-images double';
+    imgWrap.innerHTML = `<img src="${popup.image1_url}"><img src="${popup.image2_url}">`;
+    imgWrap.style.display = 'flex';
+  } else if (popup.image1_url) {
+    imgWrap.className = 'popup-images single';
+    imgWrap.innerHTML = `<img src="${popup.image1_url}">`;
+    imgWrap.style.display = 'flex';
+  } else {
+    imgWrap.style.display = 'none';
+  }
+
+  // logo
+  const logoEl = document.getElementById('popup-logo');
+  // find sponsor
+  const sponsorName = popup.title || '';
+  logoEl.innerHTML = sponsorName;
+  logoEl.style.display = 'flex';
+
+  document.getElementById('popup-amount').textContent = popup.bonus_amount || '';
+  document.getElementById('popup-label').textContent = popup.title || '';
+
+  const codeBox = document.getElementById('popup-code-box');
+  if (popup.bonus_code) {
+    document.getElementById('popup-code').textContent = popup.bonus_code;
+    codeBox.style.display = 'inline-flex';
+  } else {
+    codeBox.style.display = 'none';
+  }
+
+  const cta = document.getElementById('popup-cta');
+  cta.textContent = popup.button_text || 'TIKLA & BONUS AL';
+  cta.href = popup.link_url || '#';
+  if (popup.button_color) cta.style.background = `linear-gradient(135deg,${popup.button_color},#8a6820)`;
+
+  document.getElementById('popup-note').textContent = popup.note_text || '';
+  document.getElementById('popup-overlay').classList.add('active');
+}
+
+function closePopup() {
+  document.getElementById('popup-overlay').classList.remove('active');
+}
+
+document.getElementById('popup-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closePopup();
+});
+
+// Init
+(async () => {
+  await loadSettings();
+  await loadBanners();
+  await loadSponsors();
+})();
+</script>
+</body>
+</html>

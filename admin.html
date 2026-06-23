@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0a0a0a; --panel: #111; --border: #222; --border2: #2a2a2a;
+  --gold: #d4a843; --gold2: #f0c96a; --gold3: #8a6820;
+  --text: #eee; --sub: #888; --red: #e74c3c; --green: #27ae60;
+}
+body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; }
+
+/* LOGIN */
+#login-screen {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.login-box {
+  background: var(--panel); border: 1px solid var(--border2); border-radius: 16px;
+  padding: 36px 28px; max-width: 340px; width: 100%; text-align: center;
+}
+.login-box h2 { font-size: 20px; color: var(--gold); margin-bottom: 6px; }
+.login-box p { font-size: 12px; color: var(--sub); margin-bottom: 24px; }
+.login-input {
+  width: 100%; background: var(--bg); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 12px 14px; color: var(--text); font-size: 14px;
+  font-family: 'Inter', sans-serif; margin-bottom: 14px; outline: none;
+}
+.login-input:focus { border-color: var(--gold3); }
+.btn-gold {
+  width: 100%; background: linear-gradient(135deg,var(--gold),var(--gold3));
+  border: none; border-radius: 8px; padding: 12px;
+  color: #080808; font-size: 14px; font-weight: 700; cursor: pointer;
+  font-family: 'Inter', sans-serif;
+}
+.login-err { color: var(--red); font-size: 12px; margin-top: 10px; display: none; }
+
+/* ADMIN */
+#admin-screen { display: none; }
+
+.top-bar {
+  background: var(--panel); border-bottom: 1px solid var(--border2);
+  padding: 14px 20px; display: flex; align-items: center; justify-content: space-between;
+}
+.top-bar h1 { font-size: 16px; color: var(--gold); font-weight: 700; }
+.top-bar button { background: none; border: 1px solid var(--border2); color: var(--sub); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+
+.tabs {
+  display: flex; border-bottom: 1px solid var(--border2);
+  background: var(--panel); overflow-x: auto;
+}
+.tab-btn {
+  padding: 12px 18px; font-size: 12px; font-weight: 600; color: var(--sub);
+  border: none; background: none; cursor: pointer; white-space: nowrap;
+  border-bottom: 2px solid transparent; transition: all .2s;
+}
+.tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+.tab-content { display: none; padding: 20px; max-width: 700px; margin: 0 auto; }
+.tab-content.active { display: block; }
+
+/* CARDS */
+.card {
+  background: var(--panel); border: 1px solid var(--border2);
+  border-radius: 12px; padding: 18px; margin-bottom: 14px;
+}
+.card-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
+}
+.card-header h3 { font-size: 14px; font-weight: 600; color: var(--text); }
+
+/* FORM */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.form-row.single { grid-template-columns: 1fr; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group label { font-size: 11px; color: var(--sub); font-weight: 600; letter-spacing: .5px; text-transform: uppercase; }
+.form-input {
+  background: var(--bg); border: 1px solid var(--border2);
+  border-radius: 7px; padding: 9px 11px; color: var(--text);
+  font-size: 13px; font-family: 'Inter', sans-serif; outline: none; width: 100%;
+}
+.form-input:focus { border-color: var(--gold3); }
+.form-select {
+  background: var(--bg); border: 1px solid var(--border2);
+  border-radius: 7px; padding: 9px 11px; color: var(--text);
+  font-size: 13px; font-family: 'Inter', sans-serif; outline: none; width: 100%;
+}
+
+/* TOGGLE */
+.toggle-wrap { display: flex; align-items: center; gap: 8px; }
+.toggle { width: 38px; height: 20px; background: var(--border2); border-radius: 10px; position: relative; cursor: pointer; transition: background .2s; border: none; }
+.toggle.on { background: var(--gold); }
+.toggle::after { content: ''; position: absolute; width: 14px; height: 14px; background: #fff; border-radius: 50%; top: 3px; left: 3px; transition: left .2s; }
+.toggle.on::after { left: 21px; }
+
+/* BTNS */
+.btn-sm {
+  padding: 6px 14px; border-radius: 6px; font-size: 11px; font-weight: 600;
+  cursor: pointer; border: none; font-family: 'Inter', sans-serif;
+}
+.btn-primary { background: linear-gradient(135deg,var(--gold),var(--gold3)); color: #080808; }
+.btn-danger { background: var(--red); color: #fff; }
+.btn-secondary { background: var(--border2); color: var(--text); }
+
+.btn-full {
+  width: 100%; padding: 11px; border-radius: 8px; font-size: 13px; font-weight: 700;
+  cursor: pointer; border: none; font-family: 'Inter', sans-serif; margin-top: 12px;
+}
+
+/* ITEM LIST */
+.item-list { display: flex; flex-direction: column; gap: 8px; }
+.item-row {
+  background: var(--bg); border: 1px solid var(--border2); border-radius: 8px;
+  padding: 10px 14px; display: flex; align-items: center; gap: 10px;
+}
+.item-row .item-logo { width: 40px; height: 24px; object-fit: contain; border-radius: 4px; background: #1a1408; padding: 2px; }
+.item-row .item-name { flex: 1; font-size: 13px; font-weight: 600; }
+.item-row .item-bonus { font-size: 11px; color: var(--gold); }
+.item-row .item-actions { display: flex; gap: 6px; }
+.item-inactive { opacity: .45; }
+
+/* COLOR PICKER */
+.color-row { display: flex; align-items: center; gap: 10px; }
+.color-preview { width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--border2); cursor: pointer; }
+
+/* IMAGE PREVIEW */
+.img-preview { margin-top: 8px; max-width: 120px; border-radius: 6px; display: none; }
+
+/* TOAST */
+#toast {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  background: var(--green); color: #fff; padding: 10px 22px; border-radius: 8px;
+  font-size: 13px; font-weight: 600; z-index: 999; display: none;
+  box-shadow: 0 4px 20px rgba(0,0,0,.4);
+}
+#toast.err { background: var(--red); }
+
+/* ORDER DRAG HINT */
+.order-hint { font-size: 10px; color: var(--sub); margin-bottom: 10px; }
+
+/* RESPONSIVE */
+@media (max-width: 500px) {
+  .form-row { grid-template-columns: 1fr; }
+  .tab-btn { padding: 10px 12px; font-size: 11px; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <h2>👑 Admin Panel</h2>
+    <p>Giriş yapmak için şifreyi girin</p>
+    <input class="login-input" type="password" id="pw-input" placeholder="Şifre" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn-gold" onclick="doLogin()">Giriş Yap</button>
+    <div class="login-err" id="login-err">Hatalı şifre!</div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="admin-screen">
+  <div class="top-bar">
+    <h1>👑 Admin Panel</h1>
+    <button onclick="doLogout()">Çıkış</button>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('sponsors')">Sponsorlar</button>
+    <button class="tab-btn" onclick="switchTab('popups')">Pop-up</button>
+    <button class="tab-btn" onclick="switchTab('banners')">Bannerlar</button>
+    <button class="tab-btn" onclick="switchTab('settings')">Ayarlar</button>
+  </div>
+
+  <!-- ── SPONSORS TAB ── -->
+  <div class="tab-content active" id="tab-sponsors">
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Yeni Sponsor Ekle</h3>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Sponsor Adı *</label>
+          <input class="form-input" id="sp-name" placeholder="Betkom">
+        </div>
+        <div class="form-group">
+          <label>Bonus Metni</label>
+          <input class="form-input" id="sp-bonus" placeholder="1500 TL NAKİT BONUS">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Bonus Kodu</label>
+          <input class="form-input" id="sp-code" placeholder="tina1000">
+        </div>
+        <div class="form-group">
+          <label>Link URL</label>
+          <input class="form-input" id="sp-link" placeholder="https://...">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Logo URL</label>
+          <input class="form-input" id="sp-logo" placeholder="https://... veya raw.githubusercontent.com/...">
+        </div>
+        <div class="form-group">
+          <label>Sıra No</label>
+          <input class="form-input" id="sp-order" type="number" placeholder="0">
+        </div>
+      </div>
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Buton Rengi</label>
+          <div class="color-row">
+            <input class="form-input" id="sp-color" value="#d4a843" style="flex:1">
+            <div class="color-preview" id="sp-color-preview" style="background:#d4a843" onclick="document.getElementById('sp-color-picker').click()"></div>
+            <input type="color" id="sp-color-picker" value="#d4a843" style="display:none" oninput="syncColor('sp-color','sp-color-preview',this.value)">
+          </div>
+        </div>
+      </div>
+      <button class="btn-full btn-primary" onclick="addSponsor()">+ Sponsor Ekle</button>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Mevcut Sponsorlar</h3>
+      </div>
+      <div class="order-hint">Sıra numarasını değiştirerek sıralayabilirsiniz.</div>
+      <div class="item-list" id="sponsor-list">Yükleniyor...</div>
+    </div>
+  </div>
+
+  <!-- ── POPUPS TAB ── -->
+  <div class="tab-content" id="tab-popups">
+    <div class="card">
+      <div class="card-header">
+        <h3>Pop-up Ekle / Düzenle</h3>
+      </div>
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Sponsor Seç *</label>
+          <select class="form-select" id="pp-sponsor">
+            <option value="">-- Sponsor Seç --</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Başlık / İsim</label>
+          <input class="form-input" id="pp-title" placeholder="Betewin">
+        </div>
+        <div class="form-group">
+          <label>Bonus Miktarı</label>
+          <input class="form-input" id="pp-amount" placeholder="1000 TL">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Bonus Kodu</label>
+          <input class="form-input" id="pp-code" placeholder="tina1000">
+        </div>
+        <div class="form-group">
+          <label>Link URL</label>
+          <input class="form-input" id="pp-link" placeholder="https://...">
+        </div>
+      </div>
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Resim 1 URL (opsiyonel)</label>
+          <input class="form-input" id="pp-img1" placeholder="https://...">
+        </div>
+      </div>
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Resim 2 URL (opsiyonel — 2 resim yan yana)</label>
+          <input class="form-input" id="pp-img2" placeholder="https://...">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Buton Metni</label>
+          <input class="form-input" id="pp-btn-text" placeholder="TIKLA & BONUS AL">
+        </div>
+        <div class="form-group">
+          <label>Buton Rengi</label>
+          <div class="color-row">
+            <input class="form-input" id="pp-color" value="#d4a843" style="flex:1">
+            <div class="color-preview" id="pp-color-preview" style="background:#d4a843" onclick="document.getElementById('pp-color-picker').click()"></div>
+            <input type="color" id="pp-color-picker" value="#d4a843" style="display:none" oninput="syncColor('pp-color','pp-color-preview',this.value)">
+          </div>
+        </div>
+      </div>
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Alt Not</label>
+          <input class="form-input" id="pp-note" placeholder="Canlı destekten bonus kodunu talep edin">
+        </div>
+      </div>
+      <button class="btn-full btn-primary" onclick="savePopup()">💾 Pop-up Kaydet</button>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3>Mevcut Pop-uplar</h3></div>
+      <div class="item-list" id="popup-list">Yükleniyor...</div>
+    </div>
+  </div>
+
+  <!-- ── BANNERS TAB ── -->
+  <div class="tab-content" id="tab-banners">
+    <div class="card">
+      <div class="card-header"><h3>Yeni Banner Ekle</h3></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Başlık</label>
+          <input class="form-input" id="bn-title" placeholder="10$">
+        </div>
+        <div class="form-group">
+          <label>Alt Başlık</label>
+          <input class="form-input" id="bn-sub" placeholder="Bonusunuzu Alın">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Badge Metni</label>
+          <input class="form-input" id="bn-badge" placeholder="SMS ile Al">
+        </div>
+        <div class="form-group">
+          <label>Link URL</label>
+          <input class="form-input" id="bn-link" placeholder="https://...">
+        </div>
+      </div>
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Resim URL (opsiyonel)</label>
+          <input class="form-input" id="bn-img" placeholder="https://...">
+        </div>
+      </div>
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Sıra No</label>
+          <input class="form-input" id="bn-order" type="number" placeholder="0">
+        </div>
+      </div>
+      <button class="btn-full btn-primary" onclick="addBanner()">+ Banner Ekle</button>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Mevcut Bannerlar</h3></div>
+      <div class="item-list" id="banner-list">Yükleniyor...</div>
+    </div>
+  </div>
+
+  <!-- ── SETTINGS TAB ── -->
+  <div class="tab-content" id="tab-settings">
+    <div class="card">
+      <div class="card-header"><h3>Site Ayarları</h3></div>
+
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Site Başlığı (VIP, TINA vs.)</label>
+          <input class="form-input" id="st-title" placeholder="VIP">
+        </div>
+      </div>
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Alt Başlık</label>
+          <input class="form-input" id="st-sub" placeholder="EN İYİ BONUS FIRSATLARI">
+        </div>
+      </div>
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Header İkonu / Logo URL</label>
+          <input class="form-input" id="st-icon" placeholder="👑 veya https://resim-url...">
+          <small style="color:var(--sub);font-size:10px;margin-top:3px;">Emoji ya da resim URL yazabilirsiniz</small>
+        </div>
+      </div>
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Tarayıcı Sekmesi Başlığı</label>
+          <input class="form-input" id="st-pagetitle" placeholder="VIP Bonus">
+        </div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid var(--border2);margin:16px 0">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>İş Birliği Buton Metni</label>
+          <input class="form-input" id="st-collab" placeholder="Reklam & İş Birliği">
+        </div>
+        <div class="form-group">
+          <label>İş Birliği Alt Metni</label>
+          <input class="form-input" id="st-collabsub" placeholder="Sponsorluk için iletişime geçin">
+        </div>
+      </div>
+      <div class="form-row single">
+        <div class="form-group">
+          <label>İş Birliği Link URL</label>
+          <input class="form-input" id="st-collaburl" placeholder="https://t.me/...">
+        </div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid var(--border2);margin:16px 0">
+
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Ana Renk</label>
+          <div class="color-row">
+            <input class="form-input" id="st-color" value="#d4a843" style="flex:1">
+            <div class="color-preview" id="st-color-preview" style="background:#d4a843" onclick="document.getElementById('st-color-picker').click()"></div>
+            <input type="color" id="st-color-picker" value="#d4a843" style="display:none" oninput="syncColor('st-color','st-color-preview',this.value)">
+          </div>
+        </div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid var(--border2);margin:16px 0">
+
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Admin Şifresi</label>
+          <input class="form-input" id="st-pw" type="password" placeholder="Yeni şifre (boş bırakırsan değişmez)">
+        </div>
+      </div>
+
+      <button class="btn-full btn-primary" onclick="saveSettings()">💾 Ayarları Kaydet</button>
+    </div>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+let adminPw = '';
+let allSponsors = [];
+
+// ── AUTH ──
+async function doLogin() {
+  const pw = document.getElementById('pw-input').value.trim();
+  const { data } = await sb.from('settings').select('value').eq('key', 'admin_password').single();
+  if (data && pw === data.value) {
+    adminPw = pw;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-screen').style.display = 'block';
+    initAdmin();
+  } else {
+    document.getElementById('login-err').style.display = 'block';
+  }
+}
+
+function doLogout() {
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('admin-screen').style.display = 'none';
+  document.getElementById('pw-input').value = '';
+}
+
+// ── TABS ──
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+// ── TOAST ──
+function toast(msg, err = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = err ? 'err' : '';
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 2800);
+}
+
+// ── COLOR SYNC ──
+function syncColor(inputId, previewId, val) {
+  document.getElementById(inputId).value = val;
+  document.getElementById(previewId).style.background = val;
+}
+
+// ── INIT ──
+async function initAdmin() {
+  await Promise.all([loadSponsors(), loadBanners(), loadPopups(), loadSettingsForm()]);
+}
+
+// ── SPONSORS ──
+async function loadSponsors() {
+  const { data } = await sb.from('sponsors').select('*').order('sort_order');
+  allSponsors = data || [];
+  renderSponsorList();
+  fillSponsorSelect();
+}
+
+function renderSponsorList() {
+  const list = document.getElementById('sponsor-list');
+  if (!allSponsors.length) { list.innerHTML = '<div style="color:var(--sub);font-size:12px">Henüz sponsor yok.</div>'; return; }
+  list.innerHTML = allSponsors.map(s => `
+    <div class="item-row ${s.is_active ? '' : 'item-inactive'}">
+      ${s.logo_url ? `<img class="item-logo" src="${s.logo_url}" alt="">` : `<div style="width:40px;height:24px;background:#1a1408;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--gold)">${s.name.slice(0,5)}</div>`}
+      <div style="flex:1">
+        <div class="item-name">${s.name}</div>
+        <div class="item-bonus">${s.bonus_text || ''} ${s.bonus_code ? '· ' + s.bonus_code : ''}</div>
+      </div>
+      <div class="item-actions">
+        <button class="btn-sm btn-secondary" onclick="toggleSponsor('${s.id}',${s.is_active})">${s.is_active ? 'Gizle' : 'Göster'}</button>
+        <button class="btn-sm btn-danger" onclick="deleteSponsor('${s.id}')">Sil</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function fillSponsorSelect() {
+  const sel = document.getElementById('pp-sponsor');
+  sel.innerHTML = '<option value="">-- Sponsor Seç --</option>' +
+    allSponsors.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+}
+
+async function addSponsor() {
+  const name = document.getElementById('sp-name').value.trim();
+  if (!name) { toast('Sponsor adı gerekli!', true); return; }
+  const obj = {
+    name,
+    bonus_text: document.getElementById('sp-bonus').value.trim(),
+    bonus_code: document.getElementById('sp-code').value.trim(),
+    link_url: document.getElementById('sp-link').value.trim(),
+    logo_url: document.getElementById('sp-logo').value.trim(),
+    button_color: document.getElementById('sp-color').value,
+    sort_order: parseInt(document.getElementById('sp-order').value) || 0,
+    is_active: true
+  };
+  const { error } = await sb.from('sponsors').insert(obj);
+  if (error) { toast('Hata: ' + error.message, true); return; }
+  toast('Sponsor eklendi ✓');
+  ['sp-name','sp-bonus','sp-code','sp-link','sp-logo','sp-order'].forEach(id => document.getElementById(id).value = '');
+  await loadSponsors();
+}
+
+async function toggleSponsor(id, current) {
+  await sb.from('sponsors').update({ is_active: !current }).eq('id', id);
+  await loadSponsors();
+}
+
+async function deleteSponsor(id) {
+  if (!confirm('Bu sponsoru silmek istediğinize emin misiniz?')) return;
+  await sb.from('sponsors').delete().eq('id', id);
+  await sb.from('popups').delete().eq('sponsor_id', id);
+  toast('Silindi.');
+  await loadSponsors();
+  await loadPopups();
+}
+
+// ── POPUPS ──
+async function loadPopups() {
+  const { data } = await sb.from('popups').select('*, sponsors(name)');
+  const list = document.getElementById('popup-list');
+  if (!data || !data.length) { list.innerHTML = '<div style="color:var(--sub);font-size:12px">Henüz pop-up yok.</div>'; return; }
+  list.innerHTML = data.map(p => `
+    <div class="item-row">
+      <div style="flex:1">
+        <div class="item-name">${p.sponsors?.name || '?'}</div>
+        <div class="item-bonus">${p.bonus_amount || ''} ${p.bonus_code ? '· ' + p.bonus_code : ''}</div>
+      </div>
+      <div class="item-actions">
+        <button class="btn-sm btn-secondary" onclick="editPopup('${p.id}')">Düzenle</button>
+        <button class="btn-sm btn-danger" onclick="deletePopup('${p.id}')">Sil</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function savePopup() {
+  const sponsorId = document.getElementById('pp-sponsor').value;
+  if (!sponsorId) { toast('Sponsor seçin!', true); return; }
+  const obj = {
+    sponsor_id: sponsorId,
+    title: document.getElementById('pp-title').value.trim(),
+    bonus_amount: document.getElementById('pp-amount').value.trim(),
+    bonus_code: document.getElementById('pp-code').value.trim(),
+    link_url: document.getElementById('pp-link').value.trim(),
+    image1_url: document.getElementById('pp-img1').value.trim(),
+    image2_url: document.getElementById('pp-img2').value.trim(),
+    button_text: document.getElementById('pp-btn-text').value.trim() || 'TIKLA & BONUS AL',
+    button_color: document.getElementById('pp-color').value,
+    note_text: document.getElementById('pp-note').value.trim()
+  };
+  // upsert by sponsor_id
+  const { data: existing } = await sb.from('popups').select('id').eq('sponsor_id', sponsorId).single();
+  let error;
+  if (existing) {
+    ({ error } = await sb.from('popups').update(obj).eq('id', existing.id));
+  } else {
+    ({ error } = await sb.from('popups').insert(obj));
+  }
+  if (error) { toast('Hata: ' + error.message, true); return; }
+  toast('Pop-up kaydedildi ✓');
+  await loadPopups();
+}
+
+async function editPopup(id) {
+  const { data } = await sb.from('popups').select('*').eq('id', id).single();
+  if (!data) return;
+  document.getElementById('pp-sponsor').value = data.sponsor_id || '';
+  document.getElementById('pp-title').value = data.title || '';
+  document.getElementById('pp-amount').value = data.bonus_amount || '';
+  document.getElementById('pp-code').value = data.bonus_code || '';
+  document.getElementById('pp-link').value = data.link_url || '';
+  document.getElementById('pp-img1').value = data.image1_url || '';
+  document.getElementById('pp-img2').value = data.image2_url || '';
+  document.getElementById('pp-btn-text').value = data.button_text || '';
+  document.getElementById('pp-color').value = data.button_color || '#d4a843';
+  document.getElementById('pp-color-preview').style.background = data.button_color || '#d4a843';
+  document.getElementById('pp-note').value = data.note_text || '';
+  switchTab('popups');
+  document.querySelectorAll('.tab-btn')[1].click();
+  window.scrollTo(0, 0);
+  toast('Düzenleme moduna geçildi');
+}
+
+async function deletePopup(id) {
+  if (!confirm('Bu pop-upu silmek istediğinize emin misiniz?')) return;
+  await sb.from('popups').delete().eq('id', id);
+  toast('Silindi.');
+  await loadPopups();
+}
+
+// ── BANNERS ──
+async function loadBanners() {
+  const { data } = await sb.from('banners').select('*').order('sort_order');
+  const list = document.getElementById('banner-list');
+  if (!data || !data.length) { list.innerHTML = '<div style="color:var(--sub);font-size:12px">Henüz banner yok.</div>'; return; }
+  list.innerHTML = data.map(b => `
+    <div class="item-row ${b.is_active ? '' : 'item-inactive'}">
+      <div style="flex:1">
+        <div class="item-name">${b.title || 'Banner'}</div>
+        <div class="item-bonus">${b.subtitle || ''}</div>
+      </div>
+      <div class="item-actions">
+        <button class="btn-sm btn-secondary" onclick="toggleBanner('${b.id}',${b.is_active})">${b.is_active ? 'Gizle' : 'Göster'}</button>
+        <button class="btn-sm btn-danger" onclick="deleteBanner('${b.id}')">Sil</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function addBanner() {
+  const obj = {
+    title: document.getElementById('bn-title').value.trim(),
+    subtitle: document.getElementById('bn-sub').value.trim(),
+    badge_text: document.getElementById('bn-badge').value.trim(),
+    link_url: document.getElementById('bn-link').value.trim(),
+    image_url: document.getElementById('bn-img').value.trim(),
+    sort_order: parseInt(document.getElementById('bn-order').value) || 0,
+    is_active: true
+  };
+  const { error } = await sb.from('banners').insert(obj);
+  if (error) { toast('Hata: ' + error.message, true); return; }
+  toast('Banner eklendi ✓');
+  ['bn-title','bn-sub','bn-badge','bn-link','bn-img','bn-order'].forEach(id => document.getElementById(id).value = '');
+  await loadBanners();
+}
+
+async function toggleBanner(id, current) {
+  await sb.from('banners').update({ is_active: !current }).eq('id', id);
+  await loadBanners();
+}
+
+async function deleteBanner(id) {
+  if (!confirm('Bu bannerı silmek istediğinize emin misiniz?')) return;
+  await sb.from('banners').delete().eq('id', id);
+  toast('Silindi.');
+  await loadBanners();
+}
+
+// ── SETTINGS ──
+async function loadSettingsForm() {
+  const { data } = await sb.from('settings').select('*');
+  if (!data) return;
+  const s = {};
+  data.forEach(r => s[r.key] = r.value);
+  document.getElementById('st-title').value = s.site_title || '';
+  document.getElementById('st-sub').value = s.site_subtitle || '';
+  document.getElementById('st-icon').value = s.site_icon || '';
+  document.getElementById('st-pagetitle').value = s.page_title || '';
+  document.getElementById('st-collab').value = s.collab_text || '';
+  document.getElementById('st-collabsub').value = s.collab_subtext || '';
+  document.getElementById('st-collaburl').value = s.collab_url || '';
+  const color = s.primary_color || '#d4a843';
+  document.getElementById('st-color').value = color;
+  document.getElementById('st-color-preview').style.background = color;
+}
+
+async function saveSettings() {
+  const updates = [
+    { key: 'site_title', value: document.getElementById('st-title').value.trim() },
+    { key: 'site_subtitle', value: document.getElementById('st-sub').value.trim() },
+    { key: 'site_icon', value: document.getElementById('st-icon').value.trim() },
+    { key: 'page_title', value: document.getElementById('st-pagetitle').value.trim() },
+    { key: 'collab_text', value: document.getElementById('st-collab').value.trim() },
+    { key: 'collab_subtext', value: document.getElementById('st-collabsub').value.trim() },
+    { key: 'collab_url', value: document.getElementById('st-collaburl').value.trim() },
+    { key: 'primary_color', value: document.getElementById('st-color').value },
+  ];
+  const newPw = document.getElementById('st-pw').value.trim();
+  if (newPw) updates.push({ key: 'admin_password', value: newPw });
+
+  for (const u of updates) {
+    await sb.from('settings').upsert(u, { onConflict: 'key' });
+  }
+  toast('Ayarlar kaydedildi ✓');
+  if (newPw) { adminPw = newPw; document.getElementById('st-pw').value = ''; }
+}
+</script>
+</body>
+</html>
