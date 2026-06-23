@@ -299,7 +299,7 @@ header {
     </a>
   </div>
 
-  <div class="footer">© 2025 VIP BONUS</div>
+  <div class="footer">© 2026 VIP BONUS</div>
 </div>
 
 <!-- POPUP -->
@@ -307,7 +307,6 @@ header {
   <div class="popup-box">
     <button class="popup-close" onclick="closePopup()">✕</button>
     <div class="popup-images" id="popup-images"></div>
-    <div class="popup-logo" id="popup-logo"></div>
     <div class="popup-amount" id="popup-amount"></div>
     <div class="popup-label" id="popup-label"></div>
     <div class="popup-code-box" id="popup-code-box">
@@ -321,8 +320,6 @@ header {
 
 <script>
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-let allPopups = {};
-let autoPopupShown = false;
 
 async function loadSettings() {
   const { data } = await sb.from('settings').select('*');
@@ -369,9 +366,6 @@ async function loadBanners() {
 
 async function loadSponsors() {
   const { data: sponsors } = await sb.from('sponsors').select('*').eq('is_active', true).order('sort_order');
-  const { data: popups } = await sb.from('popups').select('*');
-
-  if (popups) popups.forEach(p => { allPopups[p.sponsor_id] = p; });
 
   const grid = document.getElementById('sponsor-grid');
   if (!sponsors || sponsors.length === 0) {
@@ -390,18 +384,14 @@ async function loadSponsors() {
     </div>
   `).join('');
 
-  // Auto popup - ilk sponsoru aç
-  if (!autoPopupShown && sponsors.length > 0) {
-    autoPopupShown = true;
-    setTimeout(() => openPopup(sponsors[0].id), 800);
+  // Auto popup - popups tablosundan ilkini al
+  const { data: popups } = await sb.from('popups').select('*').order('created_at').limit(1);
+  if (popups && popups.length > 0) {
+    setTimeout(() => showAutoPopup(popups[0]), 800);
   }
 }
 
-function openPopup(sponsorId) {
-  const popup = allPopups[sponsorId];
-  if (!popup) return;
-
-  // images
+function showAutoPopup(popup) {
   const imgWrap = document.getElementById('popup-images');
   if (popup.image1_url && popup.image2_url) {
     imgWrap.className = 'popup-images double';
@@ -415,15 +405,8 @@ function openPopup(sponsorId) {
     imgWrap.style.display = 'none';
   }
 
-  // logo
-  const logoEl = document.getElementById('popup-logo');
-  // find sponsor
-  const sponsorName = popup.title || '';
-  logoEl.innerHTML = sponsorName;
-  logoEl.style.display = 'flex';
-
   document.getElementById('popup-amount').textContent = popup.bonus_amount || '';
-  document.getElementById('popup-label').textContent = popup.title || '';
+  document.getElementById('popup-label').textContent = popup.bonus_amount || '';
 
   const codeBox = document.getElementById('popup-code-box');
   if (popup.bonus_code) {
