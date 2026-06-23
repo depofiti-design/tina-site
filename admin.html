@@ -219,35 +219,33 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
   <div class="tab-content" id="tab-popups">
     <div class="card">
       <div class="card-header"><h3>Pop-up Ekle / Düzenle</h3></div>
+      <p style="font-size:11px;color:var(--sub);margin-bottom:14px">Popup adı sadece siz görürsünüz, üyeler göremez.</p>
+
       <div class="form-row single">
         <div class="form-group">
-          <label>Sponsor Seç *</label>
-          <select class="form-select" id="pp-sponsor"><option value="">-- Sponsor Seç --</option></select>
+          <label>Popup Adı (sadece admin görür)</label>
+          <input class="form-input" id="pp-admin-name" placeholder="örn: Betewin Kasım Kampanyası">
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label>Başlık</label>
-          <input class="form-input" id="pp-title" placeholder="Betewin">
-        </div>
-        <div class="form-group">
-          <label>Bonus Miktarı</label>
+          <label>Bonus Miktarı / Başlık</label>
           <input class="form-input" id="pp-amount" placeholder="1000 TL">
         </div>
-      </div>
-      <div class="form-row">
         <div class="form-group">
           <label>Bonus Kodu</label>
           <input class="form-input" id="pp-code" placeholder="tina1000">
         </div>
+      </div>
+      <div class="form-row single">
         <div class="form-group">
-          <label>Link URL</label>
+          <label>Link URL (butona tıklayınca gidilecek)</label>
           <input class="form-input" id="pp-link" placeholder="https://...">
         </div>
       </div>
       <div class="form-row single">
         <div class="form-group">
-          <label>Resim 1 (opsiyonel)</label>
+          <label>Resim 1</label>
           <div class="upload-wrap">
             <input class="form-input" id="pp-img1" placeholder="URL otomatik dolar veya yapıştır">
             <input type="file" id="pp-img1-file" accept="image/*" style="display:none" onchange="uploadFile(this,'pp-img1','pp-img1-prog')">
@@ -258,7 +256,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
       </div>
       <div class="form-row single">
         <div class="form-group">
-          <label>Resim 2 (opsiyonel — 2 resim yan yana)</label>
+          <label>Resim 2 (opsiyonel — 2 resim yan yana görünür)</label>
           <div class="upload-wrap">
             <input class="form-input" id="pp-img2" placeholder="URL otomatik dolar veya yapıştır">
             <input type="file" id="pp-img2-file" accept="image/*" style="display:none" onchange="uploadFile(this,'pp-img2','pp-img2-prog')">
@@ -283,14 +281,18 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
       </div>
       <div class="form-row single">
         <div class="form-group">
-          <label>Alt Not</label>
+          <label>Alt Not (opsiyonel)</label>
           <input class="form-input" id="pp-note" placeholder="Canlı destekten bonus kodunu talep edin">
         </div>
       </div>
+      <input type="hidden" id="pp-edit-id">
       <button class="btn-full btn-primary" onclick="savePopup()">💾 Pop-up Kaydet</button>
     </div>
     <div class="card">
-      <div class="card-header"><h3>Mevcut Pop-uplar</h3></div>
+      <div class="card-header">
+        <h3>Mevcut Pop-uplar</h3>
+        <span style="font-size:10px;color:var(--sub)">Sayfa açılınca ilk sıradaki çıkar</span>
+      </div>
       <div class="item-list" id="popup-list">Yükleniyor...</div>
     </div>
   </div>
@@ -566,13 +568,13 @@ async function deleteSponsor(id) {
 
 // ── POPUPS ──
 async function loadPopups() {
-  const { data } = await sb.from('popups').select('*, sponsors(name)');
+  const { data } = await sb.from('popups').select('*').order('created_at');
   const list = document.getElementById('popup-list');
   if (!data || !data.length) { list.innerHTML = '<div style="color:var(--sub);font-size:12px">Henüz pop-up yok.</div>'; return; }
-  list.innerHTML = data.map(p => `
+  list.innerHTML = data.map((p, i) => `
     <div class="item-row">
       <div style="flex:1">
-        <div class="item-name">${p.sponsors?.name || '?'}</div>
+        <div class="item-name">${p.admin_name || 'Popup ' + (i+1)}</div>
         <div class="item-bonus">${p.bonus_amount || ''} ${p.bonus_code ? '· ' + p.bonus_code : ''}</div>
       </div>
       <div class="item-actions">
@@ -584,11 +586,10 @@ async function loadPopups() {
 }
 
 async function savePopup() {
-  const sponsorId = document.getElementById('pp-sponsor').value;
-  if (!sponsorId) { toast('Sponsor seçin!', true); return; }
+  const adminName = document.getElementById('pp-admin-name').value.trim();
+  if (!adminName) { toast('Popup adı gerekli!', true); return; }
   const obj = {
-    sponsor_id: sponsorId,
-    title: document.getElementById('pp-title').value.trim(),
+    admin_name: adminName,
     bonus_amount: document.getElementById('pp-amount').value.trim(),
     bonus_code: document.getElementById('pp-code').value.trim(),
     link_url: document.getElementById('pp-link').value.trim(),
@@ -598,23 +599,25 @@ async function savePopup() {
     button_color: document.getElementById('pp-color').value,
     note_text: document.getElementById('pp-note').value.trim()
   };
-  const { data: existing } = await sb.from('popups').select('id').eq('sponsor_id', sponsorId).single();
+  const editId = document.getElementById('pp-edit-id').value;
   let error;
-  if (existing) {
-    ({ error } = await sb.from('popups').update(obj).eq('id', existing.id));
+  if (editId) {
+    ({ error } = await sb.from('popups').update(obj).eq('id', editId));
   } else {
     ({ error } = await sb.from('popups').insert(obj));
   }
   if (error) { toast('Hata: ' + error.message, true); return; }
   toast('Pop-up kaydedildi ✓');
+  document.getElementById('pp-edit-id').value = '';
+  ['pp-admin-name','pp-amount','pp-code','pp-link','pp-img1','pp-img2','pp-btn-text','pp-note'].forEach(id => document.getElementById(id).value = '');
   await loadPopups();
 }
 
 async function editPopup(id) {
   const { data } = await sb.from('popups').select('*').eq('id', id).single();
   if (!data) return;
-  document.getElementById('pp-sponsor').value = data.sponsor_id || '';
-  document.getElementById('pp-title').value = data.title || '';
+  document.getElementById('pp-edit-id').value = data.id;
+  document.getElementById('pp-admin-name').value = data.admin_name || '';
   document.getElementById('pp-amount').value = data.bonus_amount || '';
   document.getElementById('pp-code').value = data.bonus_code || '';
   document.getElementById('pp-link').value = data.link_url || '';
@@ -626,7 +629,7 @@ async function editPopup(id) {
   document.getElementById('pp-note').value = data.note_text || '';
   document.querySelectorAll('.tab-btn')[1].click();
   window.scrollTo(0, 0);
-  toast('Düzenleme moduna geçildi');
+  toast('Düzenleme moduna geçildi ✏️');
 }
 
 async function deletePopup(id) {
