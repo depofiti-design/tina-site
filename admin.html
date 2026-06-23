@@ -16,10 +16,7 @@
 }
 body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; }
 
-/* LOGIN */
-#login-screen {
-  min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
-}
+#login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
 .login-box {
   background: var(--panel); border: 1px solid var(--border2); border-radius: 16px;
   padding: 36px 28px; max-width: 340px; width: 100%; text-align: center;
@@ -40,7 +37,6 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 }
 .login-err { color: var(--red); font-size: 12px; margin-top: 10px; display: none; }
 
-/* ADMIN */
 #admin-screen { display: none; }
 
 .top-bar {
@@ -50,10 +46,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 .top-bar h1 { font-size: 16px; color: var(--gold); font-weight: 700; }
 .top-bar button { background: none; border: 1px solid var(--border2); color: var(--sub); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; }
 
-.tabs {
-  display: flex; border-bottom: 1px solid var(--border2);
-  background: var(--panel); overflow-x: auto;
-}
+.tabs { display: flex; border-bottom: 1px solid var(--border2); background: var(--panel); overflow-x: auto; }
 .tab-btn {
   padding: 12px 18px; font-size: 12px; font-weight: 600; color: var(--sub);
   border: none; background: none; cursor: pointer; white-space: nowrap;
@@ -64,17 +57,10 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 .tab-content { display: none; padding: 20px; max-width: 700px; margin: 0 auto; }
 .tab-content.active { display: block; }
 
-/* CARDS */
-.card {
-  background: var(--panel); border: 1px solid var(--border2);
-  border-radius: 12px; padding: 18px; margin-bottom: 14px;
-}
-.card-header {
-  display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
-}
+.card { background: var(--panel); border: 1px solid var(--border2); border-radius: 12px; padding: 18px; margin-bottom: 14px; }
+.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
 .card-header h3 { font-size: 14px; font-weight: 600; color: var(--text); }
 
-/* FORM */
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
 .form-row.single { grid-template-columns: 1fr; }
 .form-group { display: flex; flex-direction: column; gap: 5px; }
@@ -91,28 +77,31 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
   font-size: 13px; font-family: 'Inter', sans-serif; outline: none; width: 100%;
 }
 
-/* TOGGLE */
+/* UPLOAD */
+.upload-wrap { display: flex; gap: 8px; align-items: stretch; }
+.upload-wrap .form-input { flex: 1; }
+.btn-upload {
+  background: var(--border2); border: 1px solid #444; color: var(--text);
+  border-radius: 7px; padding: 0 12px; font-size: 11px; font-weight: 600;
+  cursor: pointer; white-space: nowrap; font-family: 'Inter', sans-serif;
+  transition: background .2s; display: flex; align-items: center;
+}
+.btn-upload:hover { background: #333; }
+.upload-hint { font-size: 10px; color: var(--sub); margin-top: 4px; }
+
 .toggle-wrap { display: flex; align-items: center; gap: 8px; }
 .toggle { width: 38px; height: 20px; background: var(--border2); border-radius: 10px; position: relative; cursor: pointer; transition: background .2s; border: none; }
 .toggle.on { background: var(--gold); }
 .toggle::after { content: ''; position: absolute; width: 14px; height: 14px; background: #fff; border-radius: 50%; top: 3px; left: 3px; transition: left .2s; }
 .toggle.on::after { left: 21px; }
 
-/* BTNS */
-.btn-sm {
-  padding: 6px 14px; border-radius: 6px; font-size: 11px; font-weight: 600;
-  cursor: pointer; border: none; font-family: 'Inter', sans-serif;
-}
+.btn-sm { padding: 6px 14px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; border: none; font-family: 'Inter', sans-serif; }
 .btn-primary { background: linear-gradient(135deg,var(--gold),var(--gold3)); color: #080808; }
 .btn-danger { background: var(--red); color: #fff; }
 .btn-secondary { background: var(--border2); color: var(--text); }
 
-.btn-full {
-  width: 100%; padding: 11px; border-radius: 8px; font-size: 13px; font-weight: 700;
-  cursor: pointer; border: none; font-family: 'Inter', sans-serif; margin-top: 12px;
-}
+.btn-full { width: 100%; padding: 11px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; border: none; font-family: 'Inter', sans-serif; margin-top: 12px; }
 
-/* ITEM LIST */
 .item-list { display: flex; flex-direction: column; gap: 8px; }
 .item-row {
   background: var(--bg); border: 1px solid var(--border2); border-radius: 8px;
@@ -124,14 +113,9 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 .item-row .item-actions { display: flex; gap: 6px; }
 .item-inactive { opacity: .45; }
 
-/* COLOR PICKER */
 .color-row { display: flex; align-items: center; gap: 10px; }
 .color-preview { width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--border2); cursor: pointer; }
 
-/* IMAGE PREVIEW */
-.img-preview { margin-top: 8px; max-width: 120px; border-radius: 6px; display: none; }
-
-/* TOAST */
 #toast {
   position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
   background: var(--green); color: #fff; padding: 10px 22px; border-radius: 8px;
@@ -140,10 +124,8 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 }
 #toast.err { background: var(--red); }
 
-/* ORDER DRAG HINT */
 .order-hint { font-size: 10px; color: var(--sub); margin-bottom: 10px; }
 
-/* RESPONSIVE */
 @media (max-width: 500px) {
   .form-row { grid-template-columns: 1fr; }
   .tab-btn { padding: 10px 12px; font-size: 11px; }
@@ -152,7 +134,6 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="login-screen">
   <div class="login-box">
     <h2>👑 Admin Panel</h2>
@@ -163,7 +144,6 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
   </div>
 </div>
 
-<!-- ADMIN -->
 <div id="admin-screen">
   <div class="top-bar">
     <h1>👑 Admin Panel</h1>
@@ -171,19 +151,16 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
   </div>
 
   <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('sponsors')">Sponsorlar</button>
-    <button class="tab-btn" onclick="switchTab('popups')">Pop-up</button>
-    <button class="tab-btn" onclick="switchTab('banners')">Bannerlar</button>
-    <button class="tab-btn" onclick="switchTab('settings')">Ayarlar</button>
+    <button class="tab-btn active" onclick="switchTab('sponsors',this)">Sponsorlar</button>
+    <button class="tab-btn" onclick="switchTab('popups',this)">Pop-up</button>
+    <button class="tab-btn" onclick="switchTab('banners',this)">Bannerlar</button>
+    <button class="tab-btn" onclick="switchTab('settings',this)">Ayarlar</button>
   </div>
 
-  <!-- ── SPONSORS TAB ── -->
+  <!-- SPONSORS -->
   <div class="tab-content active" id="tab-sponsors">
-
     <div class="card">
-      <div class="card-header">
-        <h3>Yeni Sponsor Ekle</h3>
-      </div>
+      <div class="card-header"><h3>Yeni Sponsor Ekle</h3></div>
       <div class="form-row">
         <div class="form-group">
           <label>Sponsor Adı *</label>
@@ -204,17 +181,22 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
           <input class="form-input" id="sp-link" placeholder="https://...">
         </div>
       </div>
-      <div class="form-row">
+      <div class="form-row single">
         <div class="form-group">
-          <label>Logo URL</label>
-          <input class="form-input" id="sp-logo" placeholder="https://... veya raw.githubusercontent.com/...">
+          <label>Logo</label>
+          <div class="upload-wrap">
+            <input class="form-input" id="sp-logo" placeholder="URL otomatik dolar veya yapıştır">
+            <input type="file" id="sp-logo-file" accept="image/*" style="display:none" onchange="uploadFile(this,'sp-logo','sp-logo-prog')">
+            <button class="btn-upload" onclick="document.getElementById('sp-logo-file').click()">📁 Yükle</button>
+          </div>
+          <div class="upload-hint" id="sp-logo-prog"></div>
         </div>
+      </div>
+      <div class="form-row">
         <div class="form-group">
           <label>Sıra No</label>
           <input class="form-input" id="sp-order" type="number" placeholder="0">
         </div>
-      </div>
-      <div class="form-row single">
         <div class="form-group">
           <label>Buton Rengi</label>
           <div class="color-row">
@@ -226,33 +208,26 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
       </div>
       <button class="btn-full btn-primary" onclick="addSponsor()">+ Sponsor Ekle</button>
     </div>
-
     <div class="card">
-      <div class="card-header">
-        <h3>Mevcut Sponsorlar</h3>
-      </div>
+      <div class="card-header"><h3>Mevcut Sponsorlar</h3></div>
       <div class="order-hint">Sıra numarasını değiştirerek sıralayabilirsiniz.</div>
       <div class="item-list" id="sponsor-list">Yükleniyor...</div>
     </div>
   </div>
 
-  <!-- ── POPUPS TAB ── -->
+  <!-- POPUPS -->
   <div class="tab-content" id="tab-popups">
     <div class="card">
-      <div class="card-header">
-        <h3>Pop-up Ekle / Düzenle</h3>
-      </div>
+      <div class="card-header"><h3>Pop-up Ekle / Düzenle</h3></div>
       <div class="form-row single">
         <div class="form-group">
           <label>Sponsor Seç *</label>
-          <select class="form-select" id="pp-sponsor">
-            <option value="">-- Sponsor Seç --</option>
-          </select>
+          <select class="form-select" id="pp-sponsor"><option value="">-- Sponsor Seç --</option></select>
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label>Başlık / İsim</label>
+          <label>Başlık</label>
           <input class="form-input" id="pp-title" placeholder="Betewin">
         </div>
         <div class="form-group">
@@ -272,14 +247,24 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
       </div>
       <div class="form-row single">
         <div class="form-group">
-          <label>Resim 1 URL (opsiyonel)</label>
-          <input class="form-input" id="pp-img1" placeholder="https://...">
+          <label>Resim 1 (opsiyonel)</label>
+          <div class="upload-wrap">
+            <input class="form-input" id="pp-img1" placeholder="URL otomatik dolar veya yapıştır">
+            <input type="file" id="pp-img1-file" accept="image/*" style="display:none" onchange="uploadFile(this,'pp-img1','pp-img1-prog')">
+            <button class="btn-upload" onclick="document.getElementById('pp-img1-file').click()">📁 Yükle</button>
+          </div>
+          <div class="upload-hint" id="pp-img1-prog"></div>
         </div>
       </div>
       <div class="form-row single">
         <div class="form-group">
-          <label>Resim 2 URL (opsiyonel — 2 resim yan yana)</label>
-          <input class="form-input" id="pp-img2" placeholder="https://...">
+          <label>Resim 2 (opsiyonel — 2 resim yan yana)</label>
+          <div class="upload-wrap">
+            <input class="form-input" id="pp-img2" placeholder="URL otomatik dolar veya yapıştır">
+            <input type="file" id="pp-img2-file" accept="image/*" style="display:none" onchange="uploadFile(this,'pp-img2','pp-img2-prog')">
+            <button class="btn-upload" onclick="document.getElementById('pp-img2-file').click()">📁 Yükle</button>
+          </div>
+          <div class="upload-hint" id="pp-img2-prog"></div>
         </div>
       </div>
       <div class="form-row">
@@ -304,14 +289,13 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
       </div>
       <button class="btn-full btn-primary" onclick="savePopup()">💾 Pop-up Kaydet</button>
     </div>
-
     <div class="card">
       <div class="card-header"><h3>Mevcut Pop-uplar</h3></div>
       <div class="item-list" id="popup-list">Yükleniyor...</div>
     </div>
   </div>
 
-  <!-- ── BANNERS TAB ── -->
+  <!-- BANNERS -->
   <div class="tab-content" id="tab-banners">
     <div class="card">
       <div class="card-header"><h3>Yeni Banner Ekle</h3></div>
@@ -337,8 +321,13 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
       </div>
       <div class="form-row single">
         <div class="form-group">
-          <label>Resim URL (opsiyonel)</label>
-          <input class="form-input" id="bn-img" placeholder="https://...">
+          <label>Resim (opsiyonel)</label>
+          <div class="upload-wrap">
+            <input class="form-input" id="bn-img" placeholder="URL otomatik dolar veya yapıştır">
+            <input type="file" id="bn-img-file" accept="image/*" style="display:none" onchange="uploadFile(this,'bn-img','bn-img-prog')">
+            <button class="btn-upload" onclick="document.getElementById('bn-img-file').click()">📁 Yükle</button>
+          </div>
+          <div class="upload-hint" id="bn-img-prog"></div>
         </div>
       </div>
       <div class="form-row single">
@@ -355,14 +344,13 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
     </div>
   </div>
 
-  <!-- ── SETTINGS TAB ── -->
+  <!-- SETTINGS -->
   <div class="tab-content" id="tab-settings">
     <div class="card">
       <div class="card-header"><h3>Site Ayarları</h3></div>
-
       <div class="form-row single">
         <div class="form-group">
-          <label>Site Başlığı (VIP, TINA vs.)</label>
+          <label>Site Başlığı (VIP, BONUS vs.)</label>
           <input class="form-input" id="st-title" placeholder="VIP">
         </div>
       </div>
@@ -374,9 +362,13 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
       </div>
       <div class="form-row single">
         <div class="form-group">
-          <label>Header İkonu / Logo URL</label>
-          <input class="form-input" id="st-icon" placeholder="👑 veya https://resim-url...">
-          <small style="color:var(--sub);font-size:10px;margin-top:3px;">Emoji ya da resim URL yazabilirsiniz</small>
+          <label>Header Logo / Fotoğraf</label>
+          <div class="upload-wrap">
+            <input class="form-input" id="st-icon" placeholder="Emoji (👑) veya resim URL">
+            <input type="file" id="st-icon-file" accept="image/*" style="display:none" onchange="uploadFile(this,'st-icon','st-icon-prog')">
+            <button class="btn-upload" onclick="document.getElementById('st-icon-file').click()">📁 Yükle</button>
+          </div>
+          <div class="upload-hint" id="st-icon-prog">Fotoğraf yükleyebilir veya emoji yazabilirsiniz</div>
         </div>
       </div>
       <div class="form-row single">
@@ -385,9 +377,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
           <input class="form-input" id="st-pagetitle" placeholder="VIP Bonus">
         </div>
       </div>
-
       <hr style="border:none;border-top:1px solid var(--border2);margin:16px 0">
-
       <div class="form-row">
         <div class="form-group">
           <label>İş Birliği Buton Metni</label>
@@ -400,13 +390,11 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
       </div>
       <div class="form-row single">
         <div class="form-group">
-          <label>İş Birliği Link URL</label>
+          <label>İş Birliği Link</label>
           <input class="form-input" id="st-collaburl" placeholder="https://t.me/...">
         </div>
       </div>
-
       <hr style="border:none;border-top:1px solid var(--border2);margin:16px 0">
-
       <div class="form-row single">
         <div class="form-group">
           <label>Ana Renk</label>
@@ -417,35 +405,29 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
           </div>
         </div>
       </div>
-
       <hr style="border:none;border-top:1px solid var(--border2);margin:16px 0">
-
       <div class="form-row single">
         <div class="form-group">
-          <label>Admin Şifresi</label>
-          <input class="form-input" id="st-pw" type="password" placeholder="Yeni şifre (boş bırakırsan değişmez)">
+          <label>Admin Şifresi (boş bırakırsan değişmez)</label>
+          <input class="form-input" id="st-pw" type="password" placeholder="Yeni şifre">
         </div>
       </div>
-
       <button class="btn-full btn-primary" onclick="saveSettings()">💾 Ayarları Kaydet</button>
     </div>
   </div>
-
 </div>
 
 <div id="toast"></div>
 
 <script>
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-let adminPw = '';
 let allSponsors = [];
 
 // ── AUTH ──
 async function doLogin() {
   const pw = document.getElementById('pw-input').value.trim();
-  const { data } = await sb.from('settings').select('value').eq('key', 'admin_password').single();
+  const { data } = await sb.from('settings').select('value').eq('key','admin_password').single();
   if (data && pw === data.value) {
-    adminPw = pw;
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('admin-screen').style.display = 'block';
     initAdmin();
@@ -461,26 +443,53 @@ function doLogout() {
 }
 
 // ── TABS ──
-function switchTab(name) {
+function switchTab(name, btn) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-  event.target.classList.add('active');
+  btn.classList.add('active');
   document.getElementById('tab-' + name).classList.add('active');
 }
 
 // ── TOAST ──
-function toast(msg, err = false) {
+function toast(msg, err=false) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = err ? 'err' : '';
+  t.textContent = msg; t.className = err ? 'err' : '';
   t.style.display = 'block';
   setTimeout(() => t.style.display = 'none', 2800);
 }
 
-// ── COLOR SYNC ──
+// ── COLOR ──
 function syncColor(inputId, previewId, val) {
   document.getElementById(inputId).value = val;
   document.getElementById(previewId).style.background = val;
+}
+
+// ── FILE UPLOAD ──
+async function uploadFile(input, targetInputId, progressId) {
+  const file = input.files[0];
+  if (!file) return;
+  const prog = document.getElementById(progressId);
+  prog.textContent = '⏳ Yükleniyor...';
+  prog.style.color = 'var(--gold)';
+
+  // Supabase Storage'a yükle
+  const ext = file.name.split('.').pop();
+  const fileName = `${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+  const { data, error } = await sb.storage.from('images').upload(fileName, file, {
+    cacheControl: '3600', upsert: false
+  });
+
+  if (error) {
+    prog.textContent = '❌ Hata: ' + error.message;
+    prog.style.color = 'var(--red)';
+    return;
+  }
+
+  const { data: urlData } = sb.storage.from('images').getPublicUrl(fileName);
+  document.getElementById(targetInputId).value = urlData.publicUrl;
+  prog.textContent = '✅ Yüklendi!';
+  prog.style.color = 'var(--green)';
+  input.value = '';
 }
 
 // ── INIT ──
@@ -537,6 +546,7 @@ async function addSponsor() {
   if (error) { toast('Hata: ' + error.message, true); return; }
   toast('Sponsor eklendi ✓');
   ['sp-name','sp-bonus','sp-code','sp-link','sp-logo','sp-order'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('sp-logo-prog').textContent = '';
   await loadSponsors();
 }
 
@@ -588,7 +598,6 @@ async function savePopup() {
     button_color: document.getElementById('pp-color').value,
     note_text: document.getElementById('pp-note').value.trim()
   };
-  // upsert by sponsor_id
   const { data: existing } = await sb.from('popups').select('id').eq('sponsor_id', sponsorId).single();
   let error;
   if (existing) {
@@ -615,14 +624,13 @@ async function editPopup(id) {
   document.getElementById('pp-color').value = data.button_color || '#d4a843';
   document.getElementById('pp-color-preview').style.background = data.button_color || '#d4a843';
   document.getElementById('pp-note').value = data.note_text || '';
-  switchTab('popups');
   document.querySelectorAll('.tab-btn')[1].click();
   window.scrollTo(0, 0);
   toast('Düzenleme moduna geçildi');
 }
 
 async function deletePopup(id) {
-  if (!confirm('Bu pop-upu silmek istediğinize emin misiniz?')) return;
+  if (!confirm('Pop-upu silmek istediğinize emin misiniz?')) return;
   await sb.from('popups').delete().eq('id', id);
   toast('Silindi.');
   await loadPopups();
@@ -661,6 +669,7 @@ async function addBanner() {
   if (error) { toast('Hata: ' + error.message, true); return; }
   toast('Banner eklendi ✓');
   ['bn-title','bn-sub','bn-badge','bn-link','bn-img','bn-order'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('bn-img-prog').textContent = '';
   await loadBanners();
 }
 
@@ -670,7 +679,7 @@ async function toggleBanner(id, current) {
 }
 
 async function deleteBanner(id) {
-  if (!confirm('Bu bannerı silmek istediğinize emin misiniz?')) return;
+  if (!confirm('Bannerı silmek istediğinize emin misiniz?')) return;
   await sb.from('banners').delete().eq('id', id);
   toast('Silindi.');
   await loadBanners();
@@ -707,12 +716,11 @@ async function saveSettings() {
   ];
   const newPw = document.getElementById('st-pw').value.trim();
   if (newPw) updates.push({ key: 'admin_password', value: newPw });
-
   for (const u of updates) {
     await sb.from('settings').upsert(u, { onConflict: 'key' });
   }
   toast('Ayarlar kaydedildi ✓');
-  if (newPw) { adminPw = newPw; document.getElementById('st-pw').value = ''; }
+  if (newPw) document.getElementById('st-pw').value = '';
 }
 </script>
 </body>
